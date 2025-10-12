@@ -1,0 +1,59 @@
+@startuml
+title UML-діаграма розгортання: Арт-хаб Ресурс (MA-тип)
+
+left to right direction
+skinparam componentStyle uml1
+
+' =================================================================
+' 1. PL (Presentation Level) - Клієнт
+' =================================================================
+node "<<Смартфон>>" as Client {
+    node "<<OC Android / iOS>>" as OS_Mobile {
+        component [ArtHub.apk / .ipa\n(Flutter/Native)] as ClientApp
+        
+        interface "Сенсорний екран" as Screen
+        interface "Мікрофон/GPS" as Mic
+        
+        ClientApp -down- Screen
+        ClientApp -down- Mic
+    }
+}
+
+' =================================================================
+' 2. BL (Business Level) - Сервер застосунків
+' =================================================================
+node "<<Сервер 2 (BL)>>" as BLServer {
+    node "<<OC Linux>>" as BL_OS {
+        node "<<Application Server\n(Java / Apache Tomcat)>>" as AppServer {
+            component [REST Services\n*.jar] as BusinessLogic
+        }
+    }
+}
+
+' =================================================================
+' 3. AL (Access Level) - Сервер даних
+' =================================================================
+node "<<Сервер 4 (AL)>>" as ALServer {
+    node "<<OC Linux>>" as AL_OS {
+        node "<<Database Server>>" {
+            database "Relation DataBase (PostgreSQL)\nПрофілі, Конкурси" as RelationDB
+            database "JSON DataBase (MongoDB)\nSDS Дані" as JSONDB
+        }
+    }
+}
+
+' =================================================================
+' ЗВ'ЯЗКИ (Передача даних та управління)
+' =================================================================
+' PL <-> BL
+Client -- BLServer : <<REST/JSON>>\nПередача управління/даних
+
+' BL <-> AL
+BLServer -- ALServer : <<JDBC/Drivers>>\nПередача управління/даних
+
+' Зв'язки із Зовнішніми API (Зовнішній актор)
+cloud "<<Зовнішній сервіс\nAPI (Chemius, CallForEntry)>>" as ExternalAPI
+
+BLServer -- ExternalAPI : <<REST API>>\nПередача даних
+
+@enduml
