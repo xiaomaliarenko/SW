@@ -1,0 +1,70 @@
+@startuml
+title Логічна схема реляційної моделі (PostgreSQL)
+
+skinparam linetype polyline
+skinparam entity {
+    BackgroundColor White
+    BorderColor Black
+    FontStyle Bold
+}
+
+' 1. Сутність Користувач (User)
+entity User as users {
+    + id : integer <<PK>>
+    --
+    username : varchar(50) <<Unique>>
+}
+
+' 2. Сутність Профіль (Profile)
+entity Profile as profiles {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>> <<Unique>>
+    interest : varchar(100)
+    region : varchar(50)
+}
+
+' 3. Сутність Конкурс (Contest)
+entity Contest as contests {
+    + id : integer <<PK>>
+    --
+    name : varchar(255) <<Unique>>
+    deadline_date : timestamp
+    status : varchar(50)
+}
+
+' 4. Сутність Матеріал (Material)
+entity Material as materials {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>>
+    name : varchar(100)
+    type : varchar(50)
+}
+
+' 5. Сутність Сповіщення (Notification)
+entity Notification as notifications {
+    + id : integer <<PK>>
+    --
+    contest_id : integer <<FK>>
+    sent_date : timestamp
+    content : text
+}
+
+' 6. Проміжна таблиця (ProfileContestTracker)
+entity ProfileContestTracker as profile_contests {
+    + profile_id : integer <<PK, FK>>
+    + contest_id : integer <<PK, FK>>
+    --
+    tracked_date : timestamp
+}
+
+' Зв'язки
+users ||--o{ profiles : має (1:1)
+users ||--o{ materials : володіє (1:N)
+contests ||--o{ notifications : генерує (1:N)
+
+profiles ||--o{ profile_contests : відстежує (1:N)
+contests ||--o{ profile_contests : включає (1:N)
+
+@enduml
