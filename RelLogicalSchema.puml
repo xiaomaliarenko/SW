@@ -1,0 +1,70 @@
+@startuml
+title Логічна схема реляційної моделі (PostgreSQL)
+
+skinparam linetype ortho
+skinparam database {
+    BackgroundColor White
+    BorderColor Black
+}
+
+' 1. Таблиця Користувач (User)
+database User {
+    + id : integer <<PK>>
+    --
+    username : varchar(50) <<Unique>>
+}
+
+' 2. Таблиця Профіль (Profile) - Зв'язок 1:1 з User
+database Profile {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>> <<Unique>>
+    interest : varchar(100)
+    region : varchar(50)
+}
+
+' 3. Таблиця Конкурс (Contest)
+database Contest {
+    + id : integer <<PK>>
+    --
+    name : varchar(255) <<Unique>>
+    deadline_date : timestamp
+    status : varchar(50)
+}
+
+' 4. Таблиця Матеріал (Material) - Володіє Користувач
+database Material {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>>
+    name : varchar(100)
+    type : varchar(50)
+}
+
+' 5. Таблиця Сповіщення (Notification) - Агрегація від Contest
+database Notification {
+    + id : integer <<PK>>
+    --
+    contest_id : integer <<FK>>
+    sent_date : timestamp
+    content : text
+}
+
+' Зв'язки
+User ||--o{ Profile : має (1:1 через FK Unique)
+User ||--o{ Material : володіє
+Contest ||--o{ Notification : генерує
+
+' Зв'язок Багато-до-Багатьох між Профілем та Конкурсом (відстеження)
+' Потрібна проміжна таблиця (ProfileContestTracker)
+database ProfileContestTracker {
+    + profile_id : integer <<PK, FK>>
+    + contest_id : integer <<PK, FK>>
+    --
+    tracked_date : timestamp
+}
+
+Profile ||--o{ ProfileContestTracker
+Contest ||--o{ ProfileContestTracker
+
+@enduml
