@@ -1,49 +1,70 @@
 @startuml
-title UML-діаграма концептуальних класів: Арт-хаб Ресурс
+title Логічна схема реляційної моделі (PostgreSQL)
 
-hide circle
-skinparam class {
+skinparam linetype ortho
+skinparam database {
     BackgroundColor White
     BorderColor Black
 }
 
-' Класи
-class Користувач {
-    + username : String
+' 1. Таблиця Користувач (User)
+database User {
+    + id : integer <<PK>>
+    --
+    username : varchar(50) <<Unique>>
 }
 
-class Профіль {
-    + інтерес : String
-    + регіон : String
+' 2. Таблиця Профіль (Profile) - Зв'язок 1:1 з User
+database Profile {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>> <<Unique>>
+    interest : varchar(100)
+    region : varchar(50)
 }
 
-class Конкурс {
-    + назва : String
-    + дата_дедлайну : Date
-    + статус_конкурсу : String
+' 3. Таблиця Конкурс (Contest)
+database Contest {
+    + id : integer <<PK>>
+    --
+    name : varchar(255) <<Unique>>
+    deadline_date : timestamp
+    status : varchar(50)
 }
 
-class Сповіщення {
-    + дата_відправки : Date
-    + вміст : String
+' 4. Таблиця Матеріал (Material) - Володіє Користувач
+database Material {
+    + id : integer <<PK>>
+    --
+    user_id : integer <<FK>>
+    name : varchar(100)
+    type : varchar(50)
 }
 
-class Матеріал {
-    + назва : String
-    + тип_матеріалу : String
-}
-
-class Інструкція {
-    + адаптований_вміст : String
-    + статус_адаптації : String
+' 5. Таблиця Сповіщення (Notification) - Агрегація від Contest
+database Notification {
+    + id : integer <<PK>>
+    --
+    contest_id : integer <<FK>>
+    sent_date : timestamp
+    content : text
 }
 
 ' Зв'язки
-Користувач "1" -- "1" Профіль : має
-Профіль "1" -- "*" Конкурс : відстежує
-Конкурс "1" o-- "*" Сповіщення : генерує
-Користувач "1" -- "*" Матеріал : володіє
-Матеріал "1" o-- "1" Інструкція : містить
+User ||--o{ Profile : має (1:1 через FK Unique)
+User ||--o{ Material : володіє
+Contest ||--o{ Notification : генерує
+
+' Зв'язок Багато-до-Багатьох між Профілем та Конкурсом (відстеження)
+' Потрібна проміжна таблиця (ProfileContestTracker)
+database ProfileContestTracker {
+    + profile_id : integer <<PK, FK>>
+    + contest_id : integer <<PK, FK>>
+    --
+    tracked_date : timestamp
+}
+
+Profile ||--o{ ProfileContestTracker
+Contest ||--o{ ProfileContestTracker
 
 @enduml
-
