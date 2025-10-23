@@ -2,20 +2,21 @@
 title Логічна схема реляційної моделі (PostgreSQL)
 
 skinparam linetype ortho
-skinparam database {
+skinparam entity {
     BackgroundColor White
     BorderColor Black
+    FontStyle Bold
 }
 
-' 1. Таблиця Користувач (User)
-database User {
+' 1. Сутність Користувач (User)
+entity User as users {
     + id : integer <<PK>>
     --
     username : varchar(50) <<Unique>>
 }
 
-' 2. Таблиця Профіль (Profile) - Зв'язок 1:1 з User
-database Profile {
+' 2. Сутність Профіль (Profile) - Зв'язок 1:1 з User
+entity Profile as profiles {
     + id : integer <<PK>>
     --
     user_id : integer <<FK>> <<Unique>>
@@ -23,8 +24,8 @@ database Profile {
     region : varchar(50)
 }
 
-' 3. Таблиця Конкурс (Contest)
-database Contest {
+' 3. Сутність Конкурс (Contest)
+entity Contest as contests {
     + id : integer <<PK>>
     --
     name : varchar(255) <<Unique>>
@@ -32,8 +33,8 @@ database Contest {
     status : varchar(50)
 }
 
-' 4. Таблиця Матеріал (Material) - Володіє Користувач
-database Material {
+' 4. Сутність Матеріал (Material)
+entity Material as materials {
     + id : integer <<PK>>
     --
     user_id : integer <<FK>>
@@ -41,8 +42,8 @@ database Material {
     type : varchar(50)
 }
 
-' 5. Таблиця Сповіщення (Notification) - Агрегація від Contest
-database Notification {
+' 5. Сутність Сповіщення (Notification)
+entity Notification as notifications {
     + id : integer <<PK>>
     --
     contest_id : integer <<FK>>
@@ -50,21 +51,20 @@ database Notification {
     content : text
 }
 
-' Зв'язки
-User ||--o{ Profile : має (1:1 через FK Unique)
-User ||--o{ Material : володіє
-Contest ||--o{ Notification : генерує
-
-' Зв'язок Багато-до-Багатьох між Профілем та Конкурсом (відстеження)
-' Потрібна проміжна таблиця (ProfileContestTracker)
-database ProfileContestTracker {
+' 6. Проміжна таблиця (ProfileContestTracker)
+entity ProfileContestTracker as profile_contests {
     + profile_id : integer <<PK, FK>>
     + contest_id : integer <<PK, FK>>
     --
     tracked_date : timestamp
 }
 
-Profile ||--o{ ProfileContestTracker
-Contest ||--o{ ProfileContestTracker
+' Зв'язки
+users ||--o{ profiles : має (1:1)
+users ||--o{ materials : володіє (1:N)
+contests ||--o{ notifications : генерує (1:N)
+
+profiles ||--o{ profile_contests : відстежує (1:N)
+contests ||--o{ profile_contests : включає (1:N)
 
 @enduml
