@@ -8,14 +8,12 @@ skinparam entity {
     FontStyle Bold
 }
 
-' 1. Сутність Користувач (User)
 entity User as users {
     + id : integer <<PK>>
     --
     username : varchar(50) <<Unique>>
 }
 
-' 2. Сутність Профіль (Profile) - Зв'язок 1:1 з User
 entity Profile as profiles {
     + id : integer <<PK>>
     --
@@ -24,7 +22,6 @@ entity Profile as profiles {
     region : varchar(50)
 }
 
-' 3. Сутність Конкурс (Contest)
 entity Contest as contests {
     + id : integer <<PK>>
     --
@@ -33,7 +30,6 @@ entity Contest as contests {
     status : varchar(50)
 }
 
-' 4. Сутність Матеріал (Material)
 entity Material as materials {
     + id : integer <<PK>>
     --
@@ -42,7 +38,6 @@ entity Material as materials {
     type : varchar(50)
 }
 
-' 5. Сутність Сповіщення (Notification)
 entity Notification as notifications {
     + id : integer <<PK>>
     --
@@ -51,7 +46,6 @@ entity Notification as notifications {
     content : text
 }
 
-' 6. Проміжна таблиця (ProfileContestTracker)
 entity ProfileContestTracker as profile_contests {
     + profile_id : integer <<PK, FK>>
     + contest_id : integer <<PK, FK>>
@@ -59,7 +53,6 @@ entity ProfileContestTracker as profile_contests {
     tracked_date : timestamp
 }
 
-' Зв'язки
 users ||--o{ profiles : має (1:1)
 users ||--o{ materials : володіє (1:N)
 contests ||--o{ notifications : генерує (1:N)
@@ -67,5 +60,6 @@ contests ||--o{ notifications : генерує (1:N)
 profiles ||--o{ profile_contests : відстежує (1:N)
 contests ||--o{ profile_contests : включає (1:N)
 
+@enduml
 @enduml
 
