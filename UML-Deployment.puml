@@ -31,29 +31,38 @@ node "<<Сервер 2 (BL)>>" as BLServer {
 }
 
 ' =================================================================
-' 3. AL (Access Level) - Сервер даних
+' 3. AL (Access Level) - Сервери даних (Розділені)
 ' =================================================================
-node "<<Сервер 4 (AL)>>" as ALServer {
-    node "<<OC Linux>>" as AL_OS {
+node "<<Сервер 4 (AL) - SQL>>" as ALServerRel { // Для Реляційних даних
+    node "<<OC Linux>>" as AL_OS_Rel {
         node "<<Database Server>>" {
             database "Relation DataBase (PostgreSQL)\nПрофілі, Конкурси" as RelationDB
+        }
+    }
+}
+
+node "<<Сервер 5 (AL) - NoSQL>>" as ALServerNoSql { // Для JSON даних
+    node "<<OC Linux>>" as AL_OS_NoSql {
+        node "<<Database Server>>" {
             database "JSON DataBase (MongoDB)\nSDS Дані" as JSONDB
         }
     }
 }
 
+
 ' =================================================================
-' ЗВ'ЯЗКИ (Передача даних та управління)
+' ЗВ'ЯЗКИ (Control & Data Flow)
 ' =================================================================
 ' PL <-> BL
 Client -- BLServer : <<REST/JSON>>\nПередача управління/даних
 
-' BL <-> AL
-BLServer -- ALServer : <<JDBC/Drivers>>\nПередача управління/даних
+' BL <-> AL (Зв'язок до обох серверів)
+AppServer -- ALServerRel : <<JDBC/Drivers>>\nПередача даних
+AppServer -- ALServerNoSql : <<Mongo Driver>>\nПередача даних
 
-' Зв'язки із Зовнішніми API (Зовнішній актор)
+' Зв'язки із Зовнішніми API
 cloud "<<Зовнішній сервіс\nAPI (Chemius, CallForEntry)>>" as ExternalAPI
 
-BLServer -- ExternalAPI : <<REST API>>\nПередача даних
+AppServer -- ExternalAPI : <<REST API>>\nПередача даних
 
 @enduml
