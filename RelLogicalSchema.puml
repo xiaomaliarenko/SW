@@ -8,58 +8,56 @@ skinparam entity {
     FontStyle Bold
 }
 
-entity User as users {
-    + id : integer <<PK>>
+entity "User" as users {
+    + id : integer (PK)
     --
-    username : varchar(50) <<Unique>>
+    username : varchar(50) (Unique)
 }
 
-entity Profile as profiles {
-    + id : integer <<PK>>
+entity "Profile" as profiles {
+    + id : integer (PK)
     --
-    user_id : integer <<FK>> <<Unique>>
+    user_id : integer (FK, Unique)
     interest : varchar(100)
     region : varchar(50)
 }
 
-entity Contest as contests {
-    + id : integer <<PK>>
+entity "Contest" as contests {
+    + id : integer (PK)
     --
-    name : varchar(255) <<Unique>>
+    name : varchar(255) (Unique)
     deadline_date : timestamp
     status : varchar(50)
 }
 
-entity Material as materials {
-    + id : integer <<PK>>
+entity "Material" as materials {
+    + id : integer (PK)
     --
-    user_id : integer <<FK>>
+    user_id : integer (FK)
     name : varchar(100)
     type : varchar(50)
 }
 
-entity Notification as notifications {
-    + id : integer <<PK>>
+entity "Notification" as notifications {
+    + id : integer (PK)
     --
-    contest_id : integer <<FK>>
+    contest_id : integer (FK)
     sent_date : timestamp
     content : text
 }
 
-entity ProfileContestTracker as profile_contests {
-    + profile_id : integer <<PK, FK>>
-    + contest_id : integer <<PK, FK>>
+entity "ProfileContestTracker" as profile_contests {
+    + profile_id : integer (PK, FK)
+    + contest_id : integer (PK, FK)
     --
     tracked_date : timestamp
 }
 
-users ||--o{ profiles : має (1:1)
+users ||--|| profiles : має (1:1)
 users ||--o{ materials : володіє (1:N)
 contests ||--o{ notifications : генерує (1:N)
-
 profiles ||--o{ profile_contests : відстежує (1:N)
 contests ||--o{ profile_contests : включає (1:N)
 
-@enduml
 @enduml
 
