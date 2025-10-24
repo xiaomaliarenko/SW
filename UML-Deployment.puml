@@ -33,7 +33,7 @@ node "<<Сервер 2 (BL)>>" as BLServer {
 ' =================================================================
 ' 3. AL (Access Level) - Сервери даних (Розділені)
 ' =================================================================
-node "<<Сервер 4 (AL) - SQL>>" as ALServerRel { // Для Реляційних даних
+node "<<Сервер 4 (AL) - SQL>>" as ALServerRel {
     node "<<OC Linux>>" as AL_OS_Rel {
         node "<<Database Server>>" {
             database "Relation DataBase (PostgreSQL)\nПрофілі, Конкурси" as RelationDB
@@ -41,7 +41,7 @@ node "<<Сервер 4 (AL) - SQL>>" as ALServerRel { // Для Реляційн
     }
 }
 
-node "<<Сервер 5 (AL) - NoSQL>>" as ALServerNoSql { // Для JSON даних
+node "<<Сервер 5 (AL) - NoSQL>>" as ALServerNoSql {
     node "<<OC Linux>>" as AL_OS_NoSql {
         node "<<Database Server>>" {
             database "JSON DataBase (MongoDB)\nSDS Дані" as JSONDB
@@ -56,7 +56,7 @@ node "<<Сервер 5 (AL) - NoSQL>>" as ALServerNoSql { // Для JSON дан�
 ' PL <-> BL
 Client -- BLServer : <<REST/JSON>>\nПередача управління/даних
 
-' BL <-> AL (Зв'язок до обох серверів)
+' BL <-> AL
 AppServer -- ALServerRel : <<JDBC/Drivers>>\nПередача даних
 AppServer -- ALServerNoSql : <<Mongo Driver>>\nПередача даних
 
