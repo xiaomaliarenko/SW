@@ -8,54 +8,42 @@ skinparam componentStyle uml1
 ' 1. PL (Presentation Level) - Клієнт
 ' =================================================================
 node "<<Смартфон>>" as Client {
-    node "<<OC Android / iOS>>" as OS_Mobile {
-        component [ArtHub.apk / .ipa\n(Flutter/Native)] as ClientApp
-        
-        interface "Сенсорний екран" as Screen
-        interface "Мікрофон/GPS" as Mic
-        
-        ClientApp -down- Screen
-        ClientApp -down- Mic
-    }
+    node "<<OC Android / iOS>>" as OS_Mobile {
+        component [ArtHub.apk / .ipa\n(Flutter/Native)] as ClientApp
+        
+        interface "Сенсорний екран" as Screen
+        interface "Мікрофон/GPS" as Mic
+        
+        ClientApp -down- Screen
+        ClientApp -down- Mic
+    }
 }
 
 ' =================================================================
 ' 2. BL (Business Level) - Сервер застосунків
 ' =================================================================
 node "<<Сервер 2 (BL)>>" as BLServer {
-    node "<<OC Linux>>" as BL_OS {
-        node "<<Application Server\n(Java / Apache Tomcat)>>" as AppServer {
-            component [REST Services\n*.jar] as BusinessLogic
-        }
-    }
+    node "<<OC Linux>>" as BL_OS {
+        node "<<Application Server\n(Java / Apache Tomcat)>>" as AppServer {
+            component [REST Services\n*.jar] as BusinessLogic
+        }
+    }
 }
 
 ' =================================================================
-' 3. AL (Access Level) - Сервери даних (Розділені та Виправлені)
+' 3. AL (Access Level) - Сервери даних (PostgreSQL)
 ' =================================================================
 
-' Сервер 4: PostgreSQL (Виправлено: вкладення без символу зв'язку --)
+' Сервер 4: PostgreSQL (Реляційна БД)
 node "<<Сервер 4 (AL) - SQL>>" as ALServerRel {
-    node "<<OC Linux>>" as AL_OS_Rel {
-        node "<<Database Server>>" {
-            database "PostgreSQL Server" as PGServer {
-                database "Relation DataBase\nПрофілі, Конкурси" as RelationDB
-            }
-        }
-    }
+    node "<<OC Linux>>" as AL_OS_Rel {
+        node "<<Database Server>>" {
+            database "PostgreSQL Server" as PGServer {
+                database "Relation DataBase\nПрофілі, Конкурси" as RelationDB
+            }
+        }
+    }
 }
-
-' Сервер 5: MongoDB (Виправлено: вкладення без символу зв'язку --)
-node "<<Сервер 5 (AL) - NoSQL>>" as ALServerNoSql {
-    node "<<OC Linux>>" as AL_OS_NoSql {
-        node "<<Database Server>>" {
-            database "MongoDB Server" as MongoServer {
-                database "JSON DataBase\nSDS Дані" as JSONDB
-            }
-        }
-    }
-}
-
 
 ' =================================================================
 ' ЗВ'ЯЗКИ (Control & Data Flow)
@@ -65,7 +53,7 @@ Client -- BLServer : <<REST/JSON>>\nПередача управління/дан
 
 ' BL <-> AL
 AppServer -- ALServerRel : <<JDBC/Drivers>>\nПередача даних
-AppServer -- ALServerNoSql : <<Mongo Driver>>\nПередача даних
+' Зв'язок із MongoDB видалено
 
 ' Зв'язки із Зовнішніми API
 cloud "<<Зовнішній сервіс\nAPI (Chemius, CallForEntry)>>" as ExternalAPI
